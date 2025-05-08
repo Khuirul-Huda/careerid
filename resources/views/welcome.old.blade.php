@@ -170,10 +170,12 @@
 <script src="./assets/vendor/preline/dist/preline.js"></script>
 <script src="  https://unpkg.com/showdown/dist/showdown.min.js"></script>
 
+@if (isset($response))
 <script>
     const converter = new showdown.Converter(); 
     const html = converter.makeHtml(`{{ $response }}`);
     document.querySelector('#markdown').innerHTML = html;
 </script>
+@endif
 
 </html>
