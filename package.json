@@ -2,7 +2,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
+        "build": "vite build && vite build --ssr",
         "dev": "vite"
     },
     "devDependencies": {
@@ -22,7 +22,6 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
-   
         "preline": "^3.0.1"
     }
 }
