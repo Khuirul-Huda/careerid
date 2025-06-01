@@ -13,10 +13,14 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
-import ForgotPassword from '../../Components/external/sign-in/components/ForgotPassword';
-import AppTheme from '../shared-theme/AppTheme';
-import ColorModeSelect from '../shared-theme/ColorModeSelect';
-import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../../Components/external/sign-in/components/CustomIcons';
+import ForgotPassword from './components/ForgotPassword.jsx';
+import AppTheme from '../shared-theme/AppTheme.jsx';
+import ColorModeSelect from '../shared-theme/ColorModeSelect.jsx';
+import { GoogleIcon, FacebookIcon, SitemarkIcon } from './components/CustomIcons.jsx';
+import { useForm } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
+import { Link as InertiaLink } from '@inertiajs/react';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -74,16 +78,26 @@ export default function SignIn(props) {
   const handleClose = () => {
     setOpen(false);
   };
+  const { data, setData, post, processing, errors, reset } = useForm({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+  });
 
   const handleSubmit = (event) => {
     if (emailError || passwordError) {
-      event.preventDefault();
+      
       return;
     }
+    event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
+    post(route('login'), {
+      data: {
+        email: data.get('email'),
+        password: data.get('password'),
+      },
+      onFinish: () => reset('password'),
     });
   };
 
@@ -116,6 +130,7 @@ export default function SignIn(props) {
 
   return (
     <AppTheme {...props}>
+      <Head title="Log In" />
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
         <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
@@ -154,6 +169,7 @@ export default function SignIn(props) {
                 fullWidth
                 variant="outlined"
                 color={emailError ? 'error' : 'primary'}
+                onChange={(e) => {setData('email', e.target.value); validateInputs();}}
               />
             </FormControl>
             <FormControl>
@@ -171,19 +187,20 @@ export default function SignIn(props) {
                 fullWidth
                 variant="outlined"
                 color={passwordError ? 'error' : 'primary'}
+                onChange={(e) => {setData('password', e.target.value); validateInputs();}}
               />
             </FormControl>
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
             />
-            <ForgotPassword open={open} handleClose={handleClose} />
+            {/* <ForgotPassword open={open} handleClose={handleClose} /> */}
             <Button
               type="submit"
               fullWidth
               variant="contained"
               onClick={validateInputs}
-            >
+            > 
               Sign in
             </Button>
             <Link
@@ -211,18 +228,21 @@ export default function SignIn(props) {
               variant="outlined"
               onClick={() => alert('Sign in with Facebook')}
               startIcon={<FacebookIcon />}
+              disabled
             >
               Sign in with Facebook
             </Button>
             <Typography sx={{ textAlign: 'center' }}>
               Don&apos;t have an account?{' '}
-              <Link
-                href="/material-ui/getting-started/templates/sign-in/"
+              <InertiaLink href={route('register')} style={{ textDecoration: 'none' }}>
+                <Link
+                href=""
                 variant="body2"
                 sx={{ alignSelf: 'center' }}
               >
                 Sign up
               </Link>
+              </InertiaLink>
             </Typography>
           </Box>
         </Card>
@@ -230,105 +250,3 @@ export default function SignIn(props) {
     </AppTheme>
   );
 }
-
-
-// import Checkbox from '@/Components/Checkbox';
-// import InputError from '@/Components/InputError';
-// import InputLabel from '@/Components/InputLabel';
-// import PrimaryButton from '@/Components/PrimaryButton';
-// import TextInput from '@/Components/TextInput';
-// import GuestLayout from '@/Layouts/GuestLayout';
-// import { Head, Link, useForm } from '@inertiajs/react';
-
-// export default function Login({ status, canResetPassword }) {
-//     const { data, setData, post, processing, errors, reset } = useForm({
-//         email: '',
-//         password: '',
-//         remember: false,
-//     });
-
-//     const submit = (e) => {
-//         e.preventDefault();
-
-//         post(route('login'), {
-//             onFinish: () => reset('password'),
-//         });
-//     };
-
-//     return (
-//         <GuestLayout>
-//             <Head title="Log in" />
-
-//             {status && (
-//                 <div className="mb-4 text-sm font-medium text-green-600">
-//                     {status}
-//                 </div>
-//             )}
-
-//             <form onSubmit={submit}>
-//                 <div>
-//                     <InputLabel htmlFor="email" value="Email" />
-
-//                     <TextInput
-//                         id="email"
-//                         type="email"
-//                         name="email"
-//                         value={data.email}
-//                         className="mt-1 block w-full"
-//                         autoComplete="username"
-//                         isFocused={true}
-//                         onChange={(e) => setData('email', e.target.value)}
-//                     />
-
-//                     <InputError message={errors.email} className="mt-2" />
-//                 </div>
-
-//                 <div className="mt-4">
-//                     <InputLabel htmlFor="password" value="Password" />
-
-//                     <TextInput
-//                         id="password"
-//                         type="password"
-//                         name="password"
-//                         value={data.password}
-//                         className="mt-1 block w-full"
-//                         autoComplete="current-password"
-//                         onChange={(e) => setData('password', e.target.value)}
-//                     />
-
-//                     <InputError message={errors.password} className="mt-2" />
-//                 </div>
-
-//                 <div className="mt-4 block">
-//                     <label className="flex items-center">
-//                         <Checkbox
-//                             name="remember"
-//                             checked={data.remember}
-//                             onChange={(e) =>
-//                                 setData('remember', e.target.checked)
-//                             }
-//                         />
-//                         <span className="ms-2 text-sm text-gray-600">
-//                             Remember me
-//                         </span>
-//                     </label>
-//                 </div>
-
-//                 <div className="mt-4 flex items-center justify-end">
-//                     {canResetPassword && (
-//                         <Link
-//                             href={route('password.request')}
-//                             className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-//                         >
-//                             Forgot your password?
-//                         </Link>
-//                     )}
-
-//                     <PrimaryButton className="ms-4" disabled={processing}>
-//                         Log in
-//                     </PrimaryButton>
-//                 </div>
-//             </form>
-//         </GuestLayout>
-//     );
-// }
