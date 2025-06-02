@@ -7,8 +7,8 @@ $RECYCLE.BIN/
 **/ehthumbs.db
 **/Desktop.ini
 **/$RECYCLE.BIN/
-**/*.Zone.Identifier
-**/*.preview
+# **/*.Zone.Identifier
+# **/*.preview
 
 /.phpunit.cache
 /bootstrap/ssr
