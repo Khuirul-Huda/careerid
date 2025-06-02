@@ -4,8 +4,13 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\GeminiController;
 
 
+Route::post('/gemini/analyze-cv', [GeminiController::class, 'analyzeCV']);
+Route::post('/gemini/analyze-contract', [GeminiController::class, 'analyzeContract']);
+Route::post('/gemini/generate-letter', [GeminiController::class, 'generateLetter']);
+Route::post('/gemini/ask-assistant', [GeminiController::class, 'askAssistant']);
 
 Route::get('/', function () {
     return Inertia::render('Auth/marketing-page/MarketingPage', [
