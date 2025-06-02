@@ -16,7 +16,7 @@ class GeminiController extends Controller
      */
     public function analyze(Request $request)
     {
-        $nama = $request->input('nama')
+        $nama = $request->input('nama');
 
         $client = Gemini::client(env("GEMINI_API_KEY"));
         $result = $client
