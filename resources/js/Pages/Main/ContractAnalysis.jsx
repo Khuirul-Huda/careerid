@@ -2,7 +2,7 @@ import React from 'react';
 import BaseLayout from './BaseLayout.jsx';
 
 
-export default function ContractAnalyze() {
+export default function ContractAnalysis() {
     return (
         <BaseLayout>
         <div style={{ padding: '20px' }}>

@@ -2,7 +2,7 @@ import React from 'react';
 import BaseLayout from './BaseLayout.jsx';
 
 
-export default function AIConsulting() {
+export default function AIConsultation() {
     return (
         <BaseLayout>
         {/*  UI kayak chatgpt */}
