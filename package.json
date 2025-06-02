@@ -26,6 +26,12 @@
         "@emotion/styled": "^11.14.0",
         "@mui/icons-material": "^7.1.0",
         "@mui/material": "^7.1.0",
+        "@mui/x-charts": "^8.5.0",
+        "@mui/x-data-grid": "^8.5.0",
+        "@mui/x-date-pickers": "^8.5.0",
+        "@mui/x-tree-view": "^8.5.0",
+        "@react-spring/web": "^10.0.1",
+        "dayjs": "^1.11.13",
         "jspdf": "^3.0.1",
         "lucide-react": "^0.511.0",
         "preline": "^3.0.1"

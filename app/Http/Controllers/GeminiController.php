@@ -15,6 +15,8 @@ class GeminiController extends Controller
      */
     public function analyzeCV(Request $request)
     {
+
+
         $file = $request->file('file');
 
         $client = Gemini::client(env("GEMINI_API_KEY"));

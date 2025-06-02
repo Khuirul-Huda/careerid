@@ -25,28 +25,30 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     // Landing Page
     Route::get('/dashboard', function () {
-        return Inertia::render('Features/LandingPage');
+        return Inertia::render('Main/Dashboard');
     })->name('dashboard');
 
     // Fitur Analisis CV
     Route::get('/analyze/cv', function () {
-        return Inertia::render('Features/AnalyzeCV');
-    });
+        return Inertia::render('Main/CVAnalysis');
+    })->name('analyze.cv');
+    Route::post('/analyze/cv', [\App\Http\Controllers\GeminiController::class, 'analyze'])->name('analyze.cv');
 
     // Fitur Generate Surat Lamaran
     Route::get('/generate/letter', function () {
-        return Inertia::render('Features/GenerateLetter');
-    });
+        return Inertia::render('Main/LetterGenerator');
+    })->name('generate.letter');
+
 
     // Fitur Analisis Kontrak Kerja
     Route::get('/analyze/contract', function () {
-        return Inertia::render('Features/AnalyzeContract');
-    });
+        return Inertia::render('Main/ContractAnalysis');
+    })->name('analyze.contract');
 
     // Fitur Konsultasi dengan AI
     Route::get('/consultation/ai', function () {
-        return Inertia::render('Features/ConsultationWithAI');
-    });
+        return Inertia::render('Main/AIConsultation');
+    })->name('ai.consultation');
 
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

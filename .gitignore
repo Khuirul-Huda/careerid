@@ -1,3 +1,15 @@
+# Windows metadata
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+**/Thumbs.db
+**/ehthumbs.db
+**/Desktop.ini
+**/$RECYCLE.BIN/
+**/*.Zone.Identifier
+**/*.preview
+
 /.phpunit.cache
 /bootstrap/ssr
 /node_modules
