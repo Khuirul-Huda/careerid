@@ -21,25 +21,25 @@ const features = [
     title: 'CV Analysis',
     description: 'Analyze your CV with AI-powered insights.',
     icon: FileText,
-    url: ''
+    url: route('analyze.cv')
   },
   {
     title: 'Letter Generator',
     description: 'Generate personalized cover letters effortlessly.',
     icon: Mail,
-    url: ''
+    url: route('generate.letter')
   },
   {
     title: 'Contract Analysis',
     description: 'Get AI-driven analysis of your contracts.',
     icon: FileSignature,
-    url: ''
+    url: route('analyze.contract')
   },
   {
     title: 'AI Consultation',
     description: 'Consult with AI for career advice and insights.',
     icon: MessageCircle,
-    url: ''
+    url: route('ai.consultation')
   }
 ];
 
