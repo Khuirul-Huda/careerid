@@ -20,12 +20,12 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     // Landing Page
     Route::get('/dashboard', function () {
-        return Inertia::render('Features/LandingPage');
+        return Inertia::render('Main/Dashboard');
     })->name('dashboard');
 
     // Fitur Analisis CV
     Route::get('/analyze/cv', function () {
-        return Inertia::render('Features/AnalyzeCV');
+        return Inertia::render('Main/CVAnalysis');
     });
 
     // Fitur Generate Surat Lamaran
