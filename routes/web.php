@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/analyze/cv', function () {
         return Inertia::render('Main/CVAnalysis');
     });
+    Route::post('/analyze/cv', [\App\Http\Controllers\GeminiController::class, 'analyze'])->name('analyze.cv');
 
     // Fitur Generate Surat Lamaran
     Route::get('/generate/letter', function () {
