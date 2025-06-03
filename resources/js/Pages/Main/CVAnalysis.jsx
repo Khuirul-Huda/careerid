@@ -22,11 +22,15 @@ const CVAnalysis = () => {
             >
                 <Card>
                     <CardContent>
-                        <Typography variant="h1" style={{ textAlign: "center" }}>
+                        <Typography
+                            variant="h1"
+                            style={{ textAlign: "center" }}
+                        >
                             CV Analyzer
                         </Typography>
                         <p>
-                            Upload your CV to get AI-powered insights and suggestions for improvement.
+                            Upload your CV to get AI-powered insights and
+                            suggestions for improvement.
                         </p>
                         <input
                             type="file"
@@ -36,14 +40,15 @@ const CVAnalysis = () => {
                                 if (file) {
                                     // Simulate an API call
                                     setTimeout(() => {
-                                        setResponse(`Analysis of ${file.name} completed successfully!`);
+                                        setResponse(
+                                            `Analysis of ${file.name} completed successfully!`
+                                        );
                                     }, 1000);
                                 }
                             }}
                         />
                     </CardContent>
                 </Card>
-
 
                 {response && (
                     <div
