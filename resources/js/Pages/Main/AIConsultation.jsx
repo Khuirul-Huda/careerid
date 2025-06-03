@@ -8,6 +8,7 @@ import {
     Typography,
     Paper,
 } from "@mui/material";
+import { usePage } from "@inertiajs/react";
 
 export default function AIConsultation() {
     const [messages, setMessages] = useState([
@@ -15,6 +16,7 @@ export default function AIConsultation() {
     ]);
     const [input, setInput] = useState("");
     const bottomRef = useRef(null);
+    const { props } = usePage();
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -23,22 +25,38 @@ export default function AIConsultation() {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!input.trim()) return;
-
-        setMessages((prev) => [
-            ...prev,
-            { role: "user", content: input },
-            {
-                role: "assistant",
-                content: `You asked: ${input}`, // Simulasi jawaban
+        console.log(props);
+        fetch(route("ai.consultation"), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": props.csrf_token || props.csrfToken || "",
             },
-        ]);
-        setInput("");
+            body: JSON.stringify({
+                message: input,
+            }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                // Simulasi penambahan pesan balasan
+                setMessages((prev) => [
+                    ...prev,
+                    { role: "user", content: input },
+                    { role: "assistant", content: data.response },
+                ]);
+
+                setInput(""); // Clear input field after sending
+                bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
     };
 
     return (
         <BaseLayout>
             <Container
-                maxWidth="md"
+                maxWidth="lg"
                 sx={{
                     height: "calc(100vh - 80px)",
                     display: "flex",
@@ -62,15 +80,15 @@ export default function AIConsultation() {
                             key={idx}
                             elevation={0}
                             sx={{
-                                bgcolor: "transparent",
+                                bgcolor: "blue",
                                 mb: 2,
-                                pl: msg.role === "user" ? 4 : 0,
+                                pl: msg.role === "user" ? 0 : 0,
                             }}
                         >
                             <Typography
                                 variant="body1"
                                 sx={{
-                                    whiteSpace: "pre-wrap",
+                                    whiteSpace: "wrap",
                                     color:
                                         msg.role === "user"
                                             ? "#90caf9"

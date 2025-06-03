@@ -30,8 +30,8 @@ class GeminiController extends Controller
                 )
             ]);
 
-        return Inertia::render('Features/AnalyzeCV', [
-            'result' => $response->text()
+        return response()->json([
+            'response' => $response->text()
         ]);
     }
 
@@ -53,8 +53,8 @@ class GeminiController extends Controller
                 )
             ]);
 
-        return Inertia::render('Features/AnalyzeContract', [
-            'result' => $response->text()
+        return response()->json([
+            'response' => $response->text()
         ]);
     }
 
@@ -73,8 +73,8 @@ class GeminiController extends Controller
             ->geminiPro()
             ->generateContent("Buatkan surat lamaran kerja untuk $nama yang ingin melamar posisi $posisi di $perusahaan. Soroti pengalaman dan skill: $skills. Gunakan bahasa profesional dan sopan, maksimal 1 halaman.");
 
-        return Inertia::render('Features/GenerateLetter', [
-            'letter' => $response->text()
+        return response()->json([
+            'response' => $response->text()
         ]);
     }
 
@@ -87,11 +87,11 @@ class GeminiController extends Controller
 
         $client = Gemini::client(env("GEMINI_API_KEY"));
         $response = $client
-            ->geminiPro()
+            ->geminiFlash()
             ->generateContent("Kamu adalah CareerBot dari CareerID. Jawablah pertanyaan pengguna seputar dunia kerja: $pertanyaan. Gunakan bahasa santai namun informatif, seperti mentor yang suportif.");
 
-        return Inertia::render('Features/ConsultationWithAI', [
-            'answer' => $response->text()
+        return response()->json([
+            'response' => $response->text()
         ]);
     }
 }
