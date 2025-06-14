@@ -16,6 +16,7 @@ import {
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import axios from "axios";
+
 import Showdown from "showdown";
 
 export default function CVAnalysis() {
@@ -65,7 +66,8 @@ export default function CVAnalysis() {
   };
 
   return (
-    <BaseLayout>
+    <BaseLayout title="Analisis CV">
+
       <Box
         sx={{
           display: "flex",

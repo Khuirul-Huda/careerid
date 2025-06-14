@@ -14,7 +14,7 @@ import StatCard from './StatCard';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { FileText, Mail, FileSignature, MessageCircle } from 'lucide-react';
-import { Link} from '@inertiajs/react'
+import { Link  } from '@inertiajs/react'
 
 const features = [
   {
