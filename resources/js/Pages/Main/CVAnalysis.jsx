@@ -15,6 +15,9 @@ import {
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import axios from "axios";
+
+import Showdown from "showdown";
 
 export default function CVAnalysis() {
   const [file, setFile] = useState(null);
@@ -25,7 +28,28 @@ export default function CVAnalysis() {
   const handleAnalyze = () => {
     if (!file) return;
     setLoading(true);
+    
+    axios.post(route('gemini.analyze.cv', {
+      file: file,
+    }), {
+      file: file, // Pastikan file dikirim sebagai FormData
+    }, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        
+      },
+    }).then((res) => {
+      const converter = new Showdown.Converter();
+      setResponse(converter.makeHtml(res.data.response));
+    }).catch((error) => {
+      console.error("Error analyzing CV:", error);
+      setResponse("Terjadi kesalahan saat menganalisis CV. Silakan coba lagi.");
+    }).finally(() => {
+      setLoading(false);
+    });
+    return;
     // Simulasi API
+    
     setTimeout(() => {
       setResponse(`Analisis CV untuk ${file.name} telah selesai ✅`);
       setLoading(false);
@@ -42,7 +66,8 @@ export default function CVAnalysis() {
   };
 
   return (
-    <BaseLayout>
+    <BaseLayout title="Analisis CV">
+
       <Box
         sx={{
           display: "flex",
@@ -121,10 +146,10 @@ export default function CVAnalysis() {
               🔍 Hasil Analisis
             </Typography>
             <Alert severity="success" sx={{ backgroundColor: "#334d2d", color: "#c5e1a5" }}>
-              {response}
+                            ✨ Rekomendasi dan insight dari CV akan ditampilkan di sini.
             </Alert>
             <Typography mt={2}>
-              ✨ Rekomendasi dan insight dari CV akan ditampilkan di sini.
+              <div dangerouslySetInnerHTML={{ __html: response }} />
             </Typography>
           </Paper>
         )}
@@ -132,3 +157,4 @@ export default function CVAnalysis() {
     </BaseLayout>
   );
 }
+

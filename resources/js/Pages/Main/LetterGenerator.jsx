@@ -1,14 +1,15 @@
-import React, { useState, useRef } from 'react';
-import BaseLayout from './BaseLayout.jsx';
+import React, { useState, useRef } from "react";
+import BaseLayout from "./BaseLayout.jsx";
 import {
-  Box,
-  Container,
-  TextField,
-  Button,
-  Typography,
-  Paper,
-} from '@mui/material';
-import { jsPDF } from 'jspdf';
+    Box,
+    Container,
+    TextField,
+    Button,
+    Typography,
+    Paper,
+} from "@mui/material";
+import { jsPDF } from "jspdf";
+
 
 export default function LetterGenerator() {
   const [formData, setFormData] = useState({
@@ -42,7 +43,7 @@ export default function LetterGenerator() {
   };
 
   return (
-    <BaseLayout>
+    <BaseLayout title="Generator Surat ">
       <Container maxWidth="md" sx={{ py: 6 }}>
         <Typography variant="h4" align="center" gutterBottom>
           Generate Surat Izin Tidak Masuk Kerja

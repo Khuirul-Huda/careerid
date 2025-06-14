@@ -7,7 +7,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\GeminiController;
 
 
-Route::post('/gemini/analyze-cv', [GeminiController::class, 'analyzeCV']);
+Route::post('/gemini/analyze-cv', [GeminiController::class, 'analyzeCV'])->name('gemini.analyze.cv');
 Route::post('/gemini/analyze-contract', [GeminiController::class, 'analyzeContract']);
 Route::post('/gemini/generate-letter', [GeminiController::class, 'generateLetter']);
 Route::post('/gemini/ask-assistant', [GeminiController::class, 'askAssistant']);
@@ -47,8 +47,9 @@ Route::middleware('auth')->group(function () {
 
     // Fitur Konsultasi dengan AI
     Route::get('/consultation/ai', function () {
-        return Inertia::render('Main/AIConsultation');
+        return Inertia::render('Main/AIConsultation', ['csrfToken' => csrf_token()]);
     })->name('ai.consultation');
+    Route::post('/consultation/ai', [\App\Http\Controllers\GeminiController::class, 'askAssistant'])->name('ai.consultation');
 
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
