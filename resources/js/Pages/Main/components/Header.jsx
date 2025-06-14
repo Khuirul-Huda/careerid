@@ -9,7 +9,7 @@ import ColorModeIconDropdown from '../../shared-theme/ColorModeIconDropdown';
 import Search from './Search';
 
 export default function Header(props) {
- 
+
   return (
     <Stack
       direction="row"

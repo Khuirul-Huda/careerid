@@ -28,7 +28,7 @@ const Drawer = styled(MuiDrawer)({
 
 
 export default function SideMenu() {
-  const props = usePage().props
+  const propss = usePage().props
 
   return (
     <Drawer
@@ -80,7 +80,7 @@ export default function SideMenu() {
         />
         <Box sx={{ mr: 'auto', overflow: 'hidden'  }}>
           <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px' }}>
-            { props.auth.user.name }
+            { propss.auth.user.name }
           </Typography>
          
         </Box>

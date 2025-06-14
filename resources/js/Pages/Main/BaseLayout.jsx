@@ -27,12 +27,13 @@ const xThemeComponents = {
 
 export default function Dashboard(props) {
 
+    
 
     
     return (
         <AppTheme {...props} themeComponents={xThemeComponents}>
             <CssBaseline enableColorScheme />
-            <Head title={props.title || "Dashboard"} />
+            <Head title={props.title || 'Dashboard' } />
             <Box sx={{ display: "flex" }}>
 
                 <SideMenu />
@@ -58,7 +59,7 @@ export default function Dashboard(props) {
                         }}
                     >
 
-                        <Header title={props.title | 'Dashboard'}/>
+                        <Header title={props.title || 'Dashboard'}/>
                         {props.children}
                     </Stack>
                 </Box>
