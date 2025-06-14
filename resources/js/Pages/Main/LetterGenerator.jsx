@@ -1,4 +1,4 @@
-import React, { useState, useRef }, { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import BaseLayout from "./BaseLayout.jsx";
 import {
     Box,
@@ -8,15 +8,8 @@ import {
     Typography,
     Paper,
 } from "@mui/material";
-import { jsPDF } from "jspdf";import {
-  Box,
-  Container,
-  TextField,
-  Button,
-  Typography,
-  Paper,
-} from '@mui/material';
-import { jsPDF } from 'jspdf';
+import { jsPDF } from "jspdf";
+
 
 export default function LetterGenerator() {
   const [formData, setFormData] = useState({
