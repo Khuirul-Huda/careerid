@@ -61,7 +61,7 @@ export default function AIConsultation() {
   };
 
   return (
-    <BaseLayout>
+    <BaseLayout title="Konsultasi AI">
       <Container maxWidth="md" sx={{ height: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column', pt: 4 }}>
         {/* Area Konten Chat */}
         <Box

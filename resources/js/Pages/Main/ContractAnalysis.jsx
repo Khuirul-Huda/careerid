@@ -42,7 +42,7 @@ export default function ContractAnalysis() {
   };
 
   return (
-    <BaseLayout>
+    <BaseLayout title="Analisis Kontrak">
       <Box
         sx={{
           display: "flex",

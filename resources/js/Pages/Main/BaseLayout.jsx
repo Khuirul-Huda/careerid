@@ -15,6 +15,7 @@ import {
     // datePickersCustomizations,
     treeViewCustomizations,
 } from "./theme/customizations";
+import { Head } from "@inertiajs/react";
 
 const xThemeComponents = {
     ...chartsCustomizations,
@@ -24,10 +25,13 @@ const xThemeComponents = {
 };
 
 export default function Dashboard(props) {
+    
     return (
         <AppTheme {...props} themeComponents={xThemeComponents}>
             <CssBaseline enableColorScheme />
+            <Head title={props.title || "Dashboard"} />
             <Box sx={{ display: "flex" }}>
+
                 <SideMenu />
                 <AppNavbar />
                 {/* Main content */}
@@ -50,7 +54,8 @@ export default function Dashboard(props) {
                             mt: { xs: 8, md: 0 },
                         }}
                     >
-                        <Header />
+
+                        <Header title={props.title}/>
                         {props.children}
                     </Stack>
                 </Box>

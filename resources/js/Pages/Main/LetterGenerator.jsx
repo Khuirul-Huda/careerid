@@ -43,7 +43,7 @@ export default function LetterGenerator() {
   };
 
   return (
-    <BaseLayout>
+    <BaseLayout title="Generator Surat ">
       <Container maxWidth="md" sx={{ py: 6 }}>
         <Typography variant="h4" align="center" gutterBottom>
           Generate Surat Izin Tidak Masuk Kerja
