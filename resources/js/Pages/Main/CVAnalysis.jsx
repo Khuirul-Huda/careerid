@@ -89,16 +89,9 @@ export default function CVAnalysis() {
               <Button
                 variant="contained"
                 fullWidth
-                disabled={!file || loading}
+                // disabled={!file || loading}
                 onClick={handleAnalyze}
-                sx={{
-                  textTransform: "none",
-                  backgroundColor: !file ? "#ccc" : undefined,
-                  color: "#000",
-                  "&.Mui-disabled": {
-                    color: "#000",
-                  },
-                }}
+  
               >
                 {loading ? <CircularProgress size={24} color="inherit" /> : "Lakukan Analisis"}
               </Button>
