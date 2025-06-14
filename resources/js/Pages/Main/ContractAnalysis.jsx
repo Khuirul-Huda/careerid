@@ -15,6 +15,9 @@ import {
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import axios from "axios";
+
+import Showdown from "showdown";
 
 export default function ContractAnalysis() {
   const [file, setFile] = useState(null);
@@ -25,6 +28,27 @@ export default function ContractAnalysis() {
   const handleAnalyze = () => {
     if (!file) return;
     setLoading(true);
+
+   axios.post(route('analyze.contract', {
+      file: file,
+    }), {
+      file: file, // Pastikan file dikirim sebagai FormData
+    }, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        
+      },
+    }).then((res) => {
+      const converter = new Showdown.Converter();
+      setResponse(converter.makeHtml(res.data.response));
+    }).catch((error) => {
+      console.error("Error analyzing contract:", error);
+      setResponse("Terjadi kesalahan saat menganalisis kontrak. Silakan coba lagi.");
+    }).finally(() => {
+      setLoading(false);
+    });
+    return;
+    
     // Simulasi API
     setTimeout(() => {
       setResponse(`Analisis kontrak untuk ${file.name} telah selesai ✅`);
@@ -43,6 +67,7 @@ export default function ContractAnalysis() {
 
   return (
     <BaseLayout title="Analisis Kontrak">
+      
       <Box
         sx={{
           display: "flex",
@@ -85,20 +110,13 @@ export default function ContractAnalysis() {
               </Typography>
             </Stack>
 
-            <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
-              <Button
-                variant="contained"
-                fullWidth
-                disabled={!file || loading}
-                onClick={handleAnalyze}
-                sx={{
-                  textTransform: "none",
-                  backgroundColor: !file ? "#ccc" : undefined,
-                  color: "#000",
-                  "&.Mui-disabled": {
-                    color: "#000",
-                  },
-                }}
+              <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  // disabled={!file || loading}
+                  onClick={handleAnalyze}
+    
               >
                 {loading ? <CircularProgress size={24} color="inherit" /> : "Lakukan Analisis"}
               </Button>
@@ -125,13 +143,13 @@ export default function ContractAnalysis() {
             }}
           >
             <Typography variant="h6" gutterBottom>
-              🔍 Hasil Analisis Kontrak
+              🔍 Hasil Analisis
             </Typography>
             <Alert severity="success" sx={{ backgroundColor: "#334d2d", color: "#c5e1a5" }}>
-              {response}
+              ✨ Rekomendasi dan insight dari kontrak akan ditampilkan di sini.
             </Alert>
             <Typography mt={2}>
-              ✨ Rekomendasi dan insight dari kontrak akan ditampilkan di sini.
+              <div dangerouslySetInnerHTML={{ __html: response }} />
             </Typography>
           </Paper>
         )}

@@ -48,8 +48,8 @@ export default function CVAnalysis() {
       setLoading(false);
     });
     return;
+
     // Simulasi API
-    
     setTimeout(() => {
       setResponse(`Analisis CV untuk ${file.name} telah selesai ✅`);
       setLoading(false);
@@ -146,7 +146,7 @@ export default function CVAnalysis() {
               🔍 Hasil Analisis
             </Typography>
             <Alert severity="success" sx={{ backgroundColor: "#334d2d", color: "#c5e1a5" }}>
-                            ✨ Rekomendasi dan insight dari CV akan ditampilkan di sini.
+              ✨ Rekomendasi dan insight dari CV akan ditampilkan di sini.
             </Alert>
             <Typography mt={2}>
               <div dangerouslySetInnerHTML={{ __html: response }} />
@@ -157,4 +157,3 @@ export default function CVAnalysis() {
     </BaseLayout>
   );
 }
-

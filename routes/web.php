@@ -39,11 +39,11 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Main/LetterGenerator');
     })->name('generate.letter');
 
-
     // Fitur Analisis Kontrak Kerja
     Route::get('/analyze/contract', function () {
         return Inertia::render('Main/ContractAnalysis');
     })->name('analyze.contract');
+    Route::post('/analyze/contract', [\App\Http\Controllers\GeminiController::class, 'analyzeContract'])->name('analyze.contract');
 
     // Fitur Konsultasi dengan AI
     Route::get('/consultation/ai', function () {
