@@ -34,6 +34,7 @@
         "dayjs": "^1.11.13",
         "jspdf": "^3.0.1",
         "lucide-react": "^0.511.0",
-        "preline": "^3.0.1"
+        "preline": "^3.0.1",
+        "showdown": "^2.1.0"
     }
 }
