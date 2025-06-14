@@ -17,6 +17,7 @@ import {
 } from "./theme/customizations";
 import { Head } from "@inertiajs/react";
 
+
 const xThemeComponents = {
     ...chartsCustomizations,
     ...dataGridCustomizations,
@@ -25,6 +26,8 @@ const xThemeComponents = {
 };
 
 export default function Dashboard(props) {
+
+
     
     return (
         <AppTheme {...props} themeComponents={xThemeComponents}>
@@ -55,7 +58,7 @@ export default function Dashboard(props) {
                         }}
                     >
 
-                        <Header title={props.title}/>
+                        <Header title={props.title | 'Dashboard'}/>
                         {props.children}
                     </Stack>
                 </Box>

@@ -10,6 +10,7 @@ import SelectContent from './SelectContent';
 import MenuContent from './MenuContent';
 import CardAlert from './CardAlert';
 import OptionsMenu from './OptionsMenu';
+import { usePage  } from '@inertiajs/react';
 
 const drawerWidth = 240;
 
@@ -24,12 +25,17 @@ const Drawer = styled(MuiDrawer)({
   },
 });
 
+
+
 export default function SideMenu() {
+  const props = usePage().props
+
   return (
     <Drawer
       variant="permanent"
       sx={{
         display: { xs: 'none', md: 'block' },
+        
         [`& .${drawerClasses.paper}`]: {
           backgroundColor: 'background.paper',
         },
@@ -47,7 +53,7 @@ export default function SideMenu() {
       <Divider />
       <Box
         sx={{
-          overflow: 'auto',
+          overflow: 'hidden',
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
@@ -72,13 +78,11 @@ export default function SideMenu() {
           src="/static/images/avatar/7.jpg"
           sx={{ width: 36, height: 36 }}
         />
-        <Box sx={{ mr: 'auto' }}>
+        <Box sx={{ mr: 'auto', overflow: 'hidden'  }}>
           <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px' }}>
-            User
+            { props.auth.user.name }
           </Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            user@email.com
-          </Typography>
+         
         </Box>
         <OptionsMenu />
       </Stack>

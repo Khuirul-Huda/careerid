@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { router, usePage } from "@inertiajs/react";
 import axios from "axios";
-
+import Showdown from "showdown";
 
 
 export default function AIConsultation() {
@@ -20,6 +20,7 @@ export default function AIConsultation() {
   ]);
   const [input, setInput] = useState('');
   const bottomRef = useRef(null);
+  const converter = new Showdown.Converter()
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -51,7 +52,7 @@ export default function AIConsultation() {
       { role: 'user', content: input },
       {
         role: 'assistant',
-        content: res.data.response, // Ganti dengan respons AI sebenarnya
+        content: converter.makeHtml(res.data.response), // Ganti dengan respons AI sebenarnya
       },
     ]);
     setInput('');
@@ -93,8 +94,9 @@ export default function AIConsultation() {
                   color: msg.role === 'user' ? '#90caf9' : '#e0e0e0',
                   fontWeight: msg.role === 'assistant' ? 400 : 500,
                 }}
+                
               >
-                {msg.content}
+                <div dangerouslySetInnerHTML={{ __html: msg.content }} />
               </Typography>
             </Paper>
           ))}
