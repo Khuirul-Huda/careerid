@@ -1,16 +1,20 @@
 import React, { useState, useRef, useEffect } from "react";
 import BaseLayout from "./BaseLayout.jsx";
 import {
-    Box,
-    Container,
-    TextField,
-    Button,
-    Typography,
-    Paper,
+  Box,
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Paper,
 } from "@mui/material";
-import { usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
+import axios from "axios";
+
+
 
 export default function AIConsultation() {
+  const props = usePage().props
   const [messages, setMessages] = useState([
     { role: 'assistant', content: 'Halo! Ada yang bisa saya bantu hari ini?' },
   ]);
@@ -21,19 +25,39 @@ export default function AIConsultation() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    // TODO: set loading
+
+
     e.preventDefault();
     if (!input.trim()) return;
+
+
+    // FETCH WITH CSRF TOKEN
+    const res = await axios.post(route('ai.consultation'), {
+      question: input,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': props.csrf_token,
+      },
+    }).catch((error) => {
+      console.error('Error fetching AI response:', error);
+      // stop loading
+    });
 
     setMessages((prev) => [
       ...prev,
       { role: 'user', content: input },
       {
         role: 'assistant',
-        content: `Anda bertanya: ${input}`, // Ganti dengan respons AI sebenarnya
+        content: res.data.response, // Ganti dengan respons AI sebenarnya
       },
     ]);
     setInput('');
+
+    // stop loading
+
   };
 
   return (
