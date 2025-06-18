@@ -1,4 +1,4 @@
-name: Deploy via SCP and SSH
+name: Deploy via SCP and SSH (Manual)
 
 on:
   push:
@@ -13,24 +13,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy files via SCP
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          key_path: ~/.ssh/id_ed25519
-          source: "."
-          target: "~/deploy/careerid"
+      - name: Set up SSH key and known hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Run deployment commands on remote server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          key_path: ~/.ssh/id_ed25519
-          script: |
+      - name: Copy project to server
+        run: |
+          scp -r -i ~/.ssh/id_ed25519 . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/deploy/careerid
+
+      - name: Run remote deployment commands
+        run: |
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             cd ~/deploy/careerid
+
+            # Create .env file if it doesn't exist
+            if [ ! -f ".env" ]; then
+              echo "APP_ENV=production" > .env
+              echo "APP_KEY=" >> .env
+              echo "APP_DEBUG=false" >> .env
+              echo "LOG_CHANNEL=stack" >> .env
+              echo ".env file created"
+            else
+              echo ".env already exists"
+            fi
+
             composer install --no-interaction --prefer-dist --optimize-autoloader
             php artisan migrate --force
+          EOF
