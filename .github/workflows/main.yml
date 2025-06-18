@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "."
-          target: "~/cicd/careerid"
+          target: "~/deploy/careerid"
 
       - name: Run deployment commands on remote server
         uses: appleboy/ssh-action@v1.0.3
@@ -29,6 +29,6 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~/cicd/careerid
+            cd ~/deploy/careerid
             composer install --no-interaction --prefer-dist --optimize-autoloader
             php artisan migrate --force
