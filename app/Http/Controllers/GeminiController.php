@@ -103,21 +103,116 @@ return response()->json(
     /**
      * Generate surat lamaran kerja berdasarkan data dari form.
      */
-    public function generateLetter(Request $request)
+    public function generateProfessionalLetter(Request $request)
     {
-        $nama = $request->input('nama');
-        $posisi = $request->input('posisi');
-        $perusahaan = $request->input('perusahaan');
-        $skills = $request->input('skills');
-
-        $client = Gemini::client(env("GEMINI_API_KEY"));
-        $response = $client
-            ->geminiPro()
-            ->generateContent("Buatkan surat lamaran kerja untuk $nama yang ingin melamar posisi $posisi di $perusahaan. Soroti pengalaman dan skill: $skills. Gunakan bahasa profesional dan sopan, maksimal 1 halaman.");
-
-        return response()->json([
-            'response' => $response->text()
+        // Validasi jenis surat yang diminta
+        $request->validate([
+            'letterType' => 'required|string|in:lamaran,resign,cuti,izin',
         ]);
+
+        $letterType = $request->input('letterType');
+        $prompt = '';
+        $data = [];
+        $validationRules = [];
+
+        // Menggunakan Switch untuk menentukan validasi dan prompt berdasarkan jenis surat
+        switch ($letterType) {
+            case 'lamaran':
+                $validationRules = [
+                    'namaLengkap' => 'required|string|max:100',
+                    'posisi' => 'required|string|max:100',
+                    'namaPerusahaan' => 'required|string|max:100',
+                    'skills' => 'required|string|max:500',
+                ];
+                $data = $request->validate($validationRules);
+                $prompt = $this->createLamaranPrompt($data);
+                break;
+
+            case 'resign':
+                $validationRules = [
+                    'namaLengkap' => 'required|string|max:100',
+                    'posisi' => 'required|string|max:100',
+                    'namaPerusahaan' => 'required|string|max:100',
+                    'tanggalResign' => 'required|date',
+                    'namaAtasan' => 'required|string|max:100',
+                ];
+                $data = $request->validate($validationRules);
+                $prompt = $this->createResignPrompt($data);
+                break;
+
+            case 'cuti':
+                $validationRules = [
+                    'namaLengkap' => 'required|string|max:100',
+                    'posisi' => 'required|string|max:100',
+                    'tanggalMulai' => 'required|date',
+                    'tanggalSelesai' => 'required|date',
+                    'alasanCuti' => 'required|string|max:500',
+                ];
+                $data = $request->validate($validationRules);
+                $prompt = $this->createCutiPrompt($data);
+                break;
+
+            case 'izin':
+                $validationRules = [
+                    'namaLengkap' => 'required|string|max:100',
+                    'posisi' => 'required|string|max:100',
+                    'tanggalIzin' => 'required|date',
+                    'alasanIzin' => 'required|string|max:500',
+                ];
+                $data = $request->validate($validationRules);
+                $prompt = $this->createIzinPrompt($data);
+                break;
+        }
+
+        // Panggil Gemini API jika prompt berhasil dibuat
+        try {
+            $client = Gemini::client(env("GEMINI_API_KEY"));
+            $response = $client->geminiFlash()->generateContent($prompt);
+
+            return response()->json(['letterText' => $response->text()]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Gagal menghubungi layanan AI. Coba lagi nanti.'.$e], 500);
+        }
+    }
+
+    // --- Helper Functions untuk membuat Prompt ---
+
+    private function createLamaranPrompt($data) {
+        return "Tugasmu adalah AI career coach dari Career.ID. Buatkan surat lamaran kerja yang profesional dan meyakinkan untuk:
+        - Nama Pelamar: {$data['namaLengkap']}
+        - Posisi yang Dilamar: {$data['posisi']}
+        - Nama Perusahaan Tujuan: {$data['namaPerusahaan']}
+        - Sorot skill dan pengalaman berikut: {$data['skills']}
+        Instruksi: Gunakan format surat resmi, bahasa formal, dan struktur yang rapi (pembuka, isi yang menyorot kualifikasi, penutup). Buat surat yang ringkas namun berdampak. Tuliskan kota dan tanggal hari ini (Semarang, " . date('d F Y') . ") di awal surat.";
+    }
+
+    private function createResignPrompt($data) {
+        return "Tugasmu adalah AI konsultan HR dari Career.ID. Buatkan surat pengunduran diri yang sopan, profesional, dan menjaga hubungan baik untuk:
+        - Nama Karyawan: {$data['namaLengkap']}
+        - Jabatan Terakhir: {$data['posisi']}
+        - Nama Perusahaan: {$data['namaPerusahaan']}
+        - Nama Atasan/Penerima: {$data['namaAtasan']}
+        - Tanggal Efektif Resign: " . date('d F Y', strtotime($data['tanggalResign'])) . "
+        Instruksi: Sampaikan terima kasih atas kesempatan, nyatakan pengunduran diri dengan jelas, dan tawarkan bantuan untuk proses transisi. Gunakan format surat resmi. Tuliskan kota dan tanggal hari ini (Semarang, " . date('d F Y') . ") di awal surat.";
+    }
+
+    private function createCutiPrompt($data) {
+        return "Tugasmu adalah AI asisten administrasi dari Career.ID. Buatkan surat permohonan izin cuti tahunan yang formal untuk:
+        - Nama Karyawan: {$data['namaLengkap']}
+        - Jabatan: {$data['posisi']}
+        - Tanggal Mulai Cuti: " . date('d F Y', strtotime($data['tanggalMulai'])) . "
+        - Tanggal Selesai Cuti: " . date('d F Y', strtotime($data['tanggalSelesai'])) . "
+        - Alasan Cuti: {$data['alasanCuti']}
+        Instruksi: Surat ditujukan kepada 'Yth. Bapak/Ibu Pimpinan HRD'. Sampaikan permohonan dengan jelas dan sopan. Gunakan format surat resmi. Tuliskan kota dan tanggal hari ini (Semarang, " . date('d F Y') . ") di awal surat.";
+    }
+
+    private function createIzinPrompt($data) {
+        return "Tugasmu adalah AI asisten administrasi dari Career.ID. Buatkan surat izin tidak masuk kerja yang singkat dan jelas untuk:
+        - Nama Karyawan: {$data['namaLengkap']}
+        - Jabatan: {$data['posisi']}
+        - Tanggal Izin: " . date('d F Y', strtotime($data['tanggalIzin'])) . "
+        - Alasan Izin: {$data['alasanIzin']}
+        Instruksi: Surat ditujukan kepada 'Yth. Bapak/Ibu Pimpinan'. Sampaikan permohonan izin dengan ringkas. Gunakan format surat resmi. Tuliskan kota dan tanggal hari ini (Semarang, " . date('d F Y') . ") di awal surat.";
     }
 
     /**

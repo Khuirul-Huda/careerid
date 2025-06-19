@@ -7,10 +7,10 @@ use Inertia\Inertia;
 use App\Http\Controllers\GeminiController;
 
 
-Route::post('/gemini/analyze-cv', [GeminiController::class, 'analyzeCV'])->name('gemini.analyze.cv');
-Route::post('/gemini/analyze-contract', [GeminiController::class, 'analyzeContract']);
-Route::post('/gemini/generate-letter', [GeminiController::class, 'generateLetter']);
-Route::post('/gemini/ask-assistant', [GeminiController::class, 'askAssistant']);
+// Route::post('/gemini/analyze-cv', [GeminiController::class, 'analyzeCV'])->name('gemini.analyze.cv');
+// Route::post('/gemini/analyze-contract', [GeminiController::class, 'analyzeContract']);
+// Route::post('/gemini/generate-letter', [GeminiController::class, 'generateLetter']);
+// Route::post('/gemini/ask-assistant', [GeminiController::class, 'askAssistant']);
 
 Route::get('/', function () {
     return Inertia::render('Auth/marketing-page/MarketingPage', [
@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/generate/letter', function () {
         return Inertia::render('Main/LetterGenerator');
     })->name('generate.letter');
+    Route::post('/generate/letter', [\App\Http\Controllers\GeminiController::class, 'generateProfessionalLetter'])->name('generate.letter');
 
     // Fitur Analisis Kontrak Kerja
     Route::get('/analyze/contract', function () {
