@@ -53,19 +53,32 @@ class GeminiController extends Controller
         $file = $request->file('file');
 
         $client = Gemini::client(env("GEMINI_API_KEY"));
-        $response = $client
-            ->geminiFlash()
-            ->generateContent([
-                'Kamu adalah AI dari CareerID yang bertugas meninjau kontrak kerja. Evaluasi apakah kontrak ini menguntungkan bagi pekerja. Soroti poin-poin rawan, ambigu, atau janggal. Berikan saran & klarifikasi.',
-                new Blob(
-                    mimeType: MimeType::from($file->getMimeType()),
-                    data: base64_encode(file_get_contents($file->getRealPath()))
-                )
-            ]);
+$response = $client
+    ->geminiFlash()
+    ->generateContent([
+        'Kamu adalah AI dari CareerID. Tugasmu adalah menganalisis kontrak kerja dan menilai potensi risiko, ketidakadilan, ambiguitas, atau pelanggaran terhadap hak pekerja. Sajikan hasil analisis dalam format JSON berikut:
+        {
+            "judul": "Hasil Analisis Kontrak",
+            "saran": [
+                {
+                    "judul": "Contoh: Gaji Tidak Jelas",
+                    "deskripsi": "Gaji ditulis dengan tanda kurung dan tanpa nilai nominal. Hal ini dapat menimbulkan kesalahpahaman dan ketidakpastian bagi pekerja."
+                },
+                {
+                    "judul": "Pasal 4: Waktu Kontrak Tidak Terdefinisi",
+                    "deskripsi": "Tidak ada tanggal mulai dan selesai kontrak, hal ini menyulitkan evaluasi dan perlindungan hukum bagi pekerja."
+                }
+            ]
+        }',
+        new Blob(
+            mimeType: MimeType::from($file->getMimeType()),
+            data: base64_encode(file_get_contents($file->getRealPath()))
+        )
+    ]);
 
-        return response()->json([
-            'response' => $response->text()
-        ]);
+return response()->json(
+    json_decode(str_replace(['```', 'json'], '', $response->text()))
+);
     }
 
     /**

@@ -17,43 +17,41 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import axios from "axios";
 
-import Showdown from "showdown";
-
 export default function ContractAnalysis() {
   const [file, setFile] = useState(null);
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef();
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (!file) return;
     setLoading(true);
 
-   axios.post(route('analyze.contract', {
-      file: file,
-    }), {
-      file: file, // Pastikan file dikirim sebagai FormData
-    }, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        
-      },
-    }).then((res) => {
-      const converter = new Showdown.Converter();
-      setResponse(converter.makeHtml(res.data.response));
-    }).catch((error) => {
+    try {
+      const res = await axios.post(
+        route("analyze.contract"),
+        { file: file },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setResponse(res.data);
+    } catch (error) {
       console.error("Error analyzing contract:", error);
-      setResponse("Terjadi kesalahan saat menganalisis kontrak. Silakan coba lagi.");
-    }).finally(() => {
+      setResponse({
+        judul: "Gagal Analisis",
+        saran: [
+          {
+            judul: "Kesalahan",
+            deskripsi: "Terjadi kesalahan saat menganalisis kontrak. Silakan coba lagi.",
+          },
+        ],
+      });
+    } finally {
       setLoading(false);
-    });
-    return;
-    
-    // Simulasi API
-    setTimeout(() => {
-      setResponse(`Analisis kontrak untuk ${file.name} telah selesai ✅`);
-      setLoading(false);
-    }, 1500);
+    }
   };
 
   const reset = () => {
@@ -67,7 +65,6 @@ export default function ContractAnalysis() {
 
   return (
     <BaseLayout title="Analisis Kontrak">
-      
       <Box
         sx={{
           display: "flex",
@@ -110,13 +107,11 @@ export default function ContractAnalysis() {
               </Typography>
             </Stack>
 
-              <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  // disabled={!file || loading}
-                  onClick={handleAnalyze}
-    
+            <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={handleAnalyze}
               >
                 {loading ? <CircularProgress size={24} color="inherit" /> : "Lakukan Analisis"}
               </Button>
@@ -140,17 +135,46 @@ export default function ContractAnalysis() {
               backgroundColor: "#1e1e2f",
               color: "#fff",
               border: "1px solid #333",
+              mt: 3,
             }}
           >
             <Typography variant="h6" gutterBottom>
-              🔍 Hasil Analisis
+              🔍 {response.judul || "Hasil Analisis Kontrak"}
             </Typography>
-            <Alert severity="success" sx={{ backgroundColor: "#334d2d", color: "#c5e1a5" }}>
-              ✨ Rekomendasi dan insight dari kontrak akan ditampilkan di sini.
+
+            <Alert
+              severity="success"
+              sx={{
+                backgroundColor: "#334d2d",
+                color: "#c5e1a5",
+                mt: 2,
+              }}
+            >
+              ✨ Berikut adalah poin-poin yang perlu diperhatikan dari kontrak kamu:
             </Alert>
-            <Typography mt={2}>
-              <div dangerouslySetInnerHTML={{ __html: response }} />
-            </Typography>
+
+            <Box mt={2}>
+              {response?.saran?.map((item, index) => (
+                <Paper
+                  key={index}
+                  elevation={2}
+                  sx={{
+                    flex: 1,
+                    p: 3,
+                    borderRadius: 2,
+                    backgroundColor: "#1e1e2f",
+                    color: "#fff",
+                    border: "1px solid #333",
+                    mt: 2,
+                  }}
+                >
+                  <Typography variant="h6" gutterBottom>
+                    {index + 1}. {item.judul}
+                  </Typography>
+                  <Typography mt={1}>{item.deskripsi}</Typography>
+                </Paper>
+              ))}
+            </Box>
           </Paper>
         )}
       </Box>
