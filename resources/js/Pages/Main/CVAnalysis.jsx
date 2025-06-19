@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react"; // BARU: Menambahkan useEffect
 import { styled } from "@mui/material/styles";
 import BaseLayout from "./BaseLayout.jsx";
 import {
@@ -17,12 +17,14 @@ import {
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import DescriptionIcon from "@mui/icons-material/Description"; // BARU: Ikon untuk dokumen
 import axios from "axios";
 
 import Showdown from "showdown";
 
 export default function CVAnalysis() {
     const [file, setFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null); // BARU: State untuk URL pratinjau
     const [response, setResponse] = useState(null);
     const [loading, setLoading] = useState(false);
     const fileInputRef = useRef();
@@ -38,7 +40,25 @@ export default function CVAnalysis() {
         }),
     }));
 
+    // BARU DIMULAI: useEffect untuk mengelola URL pratinjau
+    useEffect(() => {
+        if (!file) {
+            setPreviewUrl(null);
+            return;
+        }
+
+        // Buat objek URL untuk pratinjau file
+        const objectUrl = URL.createObjectURL(file);
+        setPreviewUrl(objectUrl);
+
+        // Cleanup function: hapus objek URL saat komponen unmount atau file berubah
+        // untuk mencegah memory leak
+        return () => URL.revokeObjectURL(objectUrl);
+    }, [file]);
+    // BARU SELESAI
+
     const handleAnalyze = async () => {
+        if (!file) return;
         setLoading(true);
 
         try {
@@ -106,7 +126,7 @@ export default function CVAnalysis() {
                             textAlign="center"
                             mb={2}
                         >
-                            Upload CV kamu (PDF, DOC, atau DOCX) untuk
+                            Upload CV kamu (PDF, DOC, DOCX, atau Gambar) untuk
                             dianalisis oleh AI.
                         </Typography>
 
@@ -126,7 +146,7 @@ export default function CVAnalysis() {
                                     ref={fileInputRef}
                                     type="file"
                                     hidden
-                                    accept=".pdf,.doc,.docx"
+                                    accept=".pdf,.doc,.docx,image/*" // BARU: Menambahkan image/*
                                     onChange={(e) => setFile(e.target.files[0])}
                                 />
                             </Button>
@@ -139,7 +159,6 @@ export default function CVAnalysis() {
                             <Button
                                 variant="contained"
                                 fullWidth
-                                // disabled={!file || loading}
                                 onClick={handleAnalyze}
                             >
                                 {loading ? (
@@ -158,6 +177,46 @@ export default function CVAnalysis() {
                                 </IconButton>
                             )}
                         </Box>
+                        
+                        {/* BARU DIMULAI: Bagian untuk menampilkan pratinjau file */}
+                        {previewUrl && file && (
+                            <Box mt={3} textAlign="center">
+                                <Typography variant="subtitle1" gutterBottom fontWeight="medium">
+                                    Pratinjau File
+                                </Typography>
+                                <Paper variant="outlined" sx={{ p: 1 }}>
+                                    {file.type.startsWith("image/") ? (
+                                        <img
+                                            src={previewUrl}
+                                            alt="Pratinjau CV"
+                                            style={{
+                                                maxWidth: '100%',
+                                                maxHeight: '400px',
+                                                height: 'auto',
+                                                borderRadius: '4px'
+                                            }}
+                                        />
+                                    ) : file.type === "application/pdf" ? (
+                                        <embed
+                                            src={previewUrl}
+                                            type="application/pdf"
+                                            width="100%"
+                                            height="500px"
+                                        />
+                                    ) : (
+                                        <Box p={3} display="flex" flexDirection="column" alignItems="center" gap={1}>
+                                            <DescriptionIcon sx={{ fontSize: 50 }} color="action" />
+                                            <Typography variant="body2">{file.name}</Typography>
+                                            <Typography variant="caption" color="text.secondary">
+                                                Pratinjau tidak tersedia untuk tipe file ini.
+                                            </Typography>
+                                        </Box>
+                                    )}
+                                </Paper>
+                            </Box>
+                        )}
+                        {/* BARU SELESAI */}
+
                     </CardContent>
                 </Card>
 
@@ -171,7 +230,7 @@ export default function CVAnalysis() {
                             backgroundColor: "#1e1e2f",
                             color: "#fff",
                             border: "1px solid #333",
-                            mt: 3,
+                            mt: { xs: 3, md: 0 }, // Koreksi margin top pada mobile
                         }}
                     >
                         <Typography variant="h6" gutterBottom>

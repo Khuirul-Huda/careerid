@@ -88,7 +88,7 @@ $response = $client
                     "deskripsi": "File yang diunggah bukan merupakan kontrak kerja. Silakan unggah file kontrak kerja yang valid."
                 }
             ]
-        }',
+        } Jawabnya jangan terlalu sinis gitu gan, ceria saja kasih emot apa kek biar usernya senang. Jangan lupa tambahkan emoji secukupnya.',
         new Blob(
             mimeType: MimeType::from($file->getMimeType()),
             data: base64_encode(file_get_contents($file->getRealPath()))
