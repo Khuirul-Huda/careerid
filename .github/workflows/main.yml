@@ -40,6 +40,5 @@ jobs:
               echo ".env already exists"
             fi
 
-            composer install --no-interaction --prefer-dist --optimize-autoloader
-            php artisan migrate --force
+            echo "Done"
           EOF
