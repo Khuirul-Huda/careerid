@@ -33,6 +33,16 @@ class GeminiController extends Controller
                         "judul": "Gunakan kata kunci yang relevan",
                         "deskripsi": "Sertakan kata kunci yang sesuai dengan posisi yang dilamar untuk meningkatkan peluang lolos ATS."
                     }]
+
+                } Jika yang diunggah bukan cv, maka respon dengan format JSON seperti ini:
+                {
+                    "skor": 0,
+                    "saran": [
+                        {
+                            "judul": "Bukan CV",
+                            "deskripsi": "Gambar yang diunggah bukan merupakan CV. Silakan unggah gambar CV yang valid."
+                        }
+                    ]
                 }',
                 new Blob(
                     mimeType: MimeType::from($file->getMimeType()),
@@ -67,6 +77,15 @@ $response = $client
                 {
                     "judul": "Pasal 4: Waktu Kontrak Tidak Terdefinisi",
                     "deskripsi": "Tidak ada tanggal mulai dan selesai kontrak, hal ini menyulitkan evaluasi dan perlindungan hukum bagi pekerja."
+                }
+            ]
+        } Jika yang diunggah bukan kontrak kerja, maka respon dengan format JSON seperti ini:
+        {
+            "judul": "Bukan Kontrak Kerja",
+            "saran": [
+                {
+                    "judul": "Bukan Kontrak",
+                    "deskripsi": "File yang diunggah bukan merupakan kontrak kerja. Silakan unggah file kontrak kerja yang valid."
                 }
             ]
         }',

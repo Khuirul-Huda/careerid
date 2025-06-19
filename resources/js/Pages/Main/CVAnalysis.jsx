@@ -186,7 +186,7 @@ export default function CVAnalysis() {
                                 mt: 2,
                             }}
                         >
-                            Skor ATS kamu: <strong>{response.skor} / 10</strong>{" "}
+                            Skor ATS kamu: <strong>{response.skor} </strong>{" "}
                             🎯 <br />✨ Berikut adalah saran untuk memperbaiki
                             CV kamu:
                         </Alert>
