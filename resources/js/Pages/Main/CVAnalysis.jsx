@@ -1,17 +1,19 @@
 import React, { useState, useRef } from "react";
+import { styled } from "@mui/material/styles";
 import BaseLayout from "./BaseLayout.jsx";
 import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Button,
-  Alert,
-  CircularProgress,
-  Divider,
-  Paper,
-  Stack,
-  IconButton,
+    Box,
+    Card,
+    CardContent,
+    Typography,
+    Button,
+    Alert,
+    CircularProgress,
+    Divider,
+    Paper,
+    Stack,
+    IconButton,
+    Grid,
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
@@ -20,140 +22,204 @@ import axios from "axios";
 import Showdown from "showdown";
 
 export default function CVAnalysis() {
-  const [file, setFile] = useState(null);
-  const [response, setResponse] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const fileInputRef = useRef();
+    const [file, setFile] = useState(null);
+    const [response, setResponse] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const fileInputRef = useRef();
 
-  const handleAnalyze = () => {
-    if (!file) return;
-    setLoading(true);
-    
-    axios.post(route('gemini.analyze.cv', {
-      file: file,
-    }), {
-      file: file, // Pastikan file dikirim sebagai FormData
-    }, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        
-      },
-    }).then((res) => {
-      const converter = new Showdown.Converter();
-      setResponse(converter.makeHtml(res.data.response));
-    }).catch((error) => {
-      console.error("Error analyzing CV:", error);
-      setResponse("Terjadi kesalahan saat menganalisis CV. Silakan coba lagi.");
-    }).finally(() => {
-      setLoading(false);
-    });
-    return;
+    const Item = styled(Paper)(({ theme }) => ({
+        backgroundColor: "#fff",
+        ...theme.typography.body2,
+        padding: theme.spacing(1),
+        textAlign: "center",
+        color: (theme.vars ?? theme).palette.text.secondary,
+        ...theme.applyStyles("dark", {
+            backgroundColor: "#1A2027",
+        }),
+    }));
 
-    // Simulasi API
-    setTimeout(() => {
-      setResponse(`Analisis CV untuk ${file.name} telah selesai ✅`);
-      setLoading(false);
-    }, 1500);
-  };
+    const handleAnalyze = async () => {
+        setLoading(true);
 
-  const reset = () => {
-    setFile(null);
-    setResponse(null);
-    setLoading(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
+        try {
+            const res = await axios.post(
+                route("gemini.analyze.cv"),
+                { file },
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+            setResponse(res.data); // ini penting!
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+        console.log(response);
 
-  return (
-    <BaseLayout title="Analisis CV">
+        return;
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", md: response ? "row" : "column" },
-          gap: 3,
-          p: 4,
-        }}
-      >
-        <Card sx={{ flex: 1, maxWidth: 600, mx: "auto" }}>
-          <CardContent>
-            <Typography variant="h5" fontWeight="bold" textAlign="center" gutterBottom>
-              📝 CV Analyzer
-            </Typography>
-            <Typography variant="body2" color="text.secondary" textAlign="center" mb={2}>
-              Upload CV kamu (PDF, DOC, atau DOCX) untuk dianalisis oleh AI.
-            </Typography>
+        // Simulasi API
+        setTimeout(() => {
+            setResponse(`Analisis CV untuk ${file.name} telah selesai ✅`);
+            setLoading(false);
+        }, 1500);
+    };
 
-            <Divider sx={{ my: 2 }} />
+    const reset = () => {
+        setFile(null);
+        setResponse(null);
+        setLoading(false);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+    };
 
-            <Typography variant="body2" sx={{ mb: 1 }}>
-              Pilih File CV
-            </Typography>
-            <Stack direction="row" alignItems="center" spacing={2}>
-              <Button
-                component="label"
-                variant="outlined"
-                startIcon={<UploadFileIcon />}
-              >
-                Pilih File
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  hidden
-                  accept=".pdf,.doc,.docx"
-                  onChange={(e) => setFile(e.target.files[0])}
-                />
-              </Button>
-              <Typography variant="body2" noWrap>
-                {file ? file.name : "Belum ada file dipilih"}
-              </Typography>
-            </Stack>
+    return (
+        <BaseLayout title="Analisis CV">
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: {
+                        xs: "column",
+                        md: response ? "row" : "column",
+                    },
+                    gap: 3,
+                    p: 4,
+                }}
+            >
+                <Card sx={{ flex: 1, maxWidth: 600, mx: "auto" }}>
+                    <CardContent>
+                        <Typography
+                            variant="h5"
+                            fontWeight="bold"
+                            textAlign="center"
+                            gutterBottom
+                        >
+                            📝 CV Analyzer
+                        </Typography>
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            textAlign="center"
+                            mb={2}
+                        >
+                            Upload CV kamu (PDF, DOC, atau DOCX) untuk
+                            dianalisis oleh AI.
+                        </Typography>
 
-            <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
-              <Button
-                variant="contained"
-                fullWidth
-                // disabled={!file || loading}
-                onClick={handleAnalyze}
-  
-              >
-                {loading ? <CircularProgress size={24} color="inherit" /> : "Lakukan Analisis"}
-              </Button>
+                        <Divider sx={{ my: 2 }} />
 
-              {file && (
-                <IconButton color="secondary" onClick={reset}>
-                  <RestartAltIcon />
-                </IconButton>
-              )}
+                        <Typography variant="body2" sx={{ mb: 1 }}>
+                            Pilih File CV
+                        </Typography>
+                        <Stack direction="row" alignItems="center" spacing={2}>
+                            <Button
+                                component="label"
+                                variant="outlined"
+                                startIcon={<UploadFileIcon />}
+                            >
+                                Pilih File
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    hidden
+                                    accept=".pdf,.doc,.docx"
+                                    onChange={(e) => setFile(e.target.files[0])}
+                                />
+                            </Button>
+                            <Typography variant="body2" noWrap>
+                                {file ? file.name : "Belum ada file dipilih"}
+                            </Typography>
+                        </Stack>
+
+                        <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
+                            <Button
+                                variant="contained"
+                                fullWidth
+                                // disabled={!file || loading}
+                                onClick={handleAnalyze}
+                            >
+                                {loading ? (
+                                    <CircularProgress
+                                        size={24}
+                                        color="inherit"
+                                    />
+                                ) : (
+                                    "Lakukan Analisis"
+                                )}
+                            </Button>
+
+                            {file && (
+                                <IconButton color="secondary" onClick={reset}>
+                                    <RestartAltIcon />
+                                </IconButton>
+                            )}
+                        </Box>
+                    </CardContent>
+                </Card>
+
+                {response && (
+                    <Paper
+                        elevation={2}
+                        sx={{
+                            flex: 1,
+                            p: 3,
+                            borderRadius: 2,
+                            backgroundColor: "#1e1e2f",
+                            color: "#fff",
+                            border: "1px solid #333",
+                            mt: 3,
+                        }}
+                    >
+                        <Typography variant="h6" gutterBottom>
+                            🔍 Hasil Analisis CV
+                        </Typography>
+
+                        <Alert
+                            severity="success"
+                            sx={{
+                                backgroundColor: "#334d2d",
+                                color: "#c5e1a5",
+                                mt: 2,
+                            }}
+                        >
+                            Skor ATS kamu: <strong>{response.skor} / 10</strong>{" "}
+                            🎯 <br />✨ Berikut adalah saran untuk memperbaiki
+                            CV kamu:
+                        </Alert>
+
+                        <Box mt={2}>
+                            {response?.saran
+                                ?.slice(0, 10)
+                                .map((item, index) => (
+                                    <Paper
+                                        key={index}
+                                        elevation={2}
+                                        sx={{
+                                            flex: 1,
+                                            p: 3,
+                                            borderRadius: 2,
+                                            backgroundColor: "#1e1e2f",
+                                            color: "#fff",
+                                            border: "1px solid #333",
+                                            mt: 2,
+                                        }}
+                                    >
+                                        <Typography variant="h6" gutterBottom>
+                                            {index + 1}. {item.judul}
+                                        </Typography>
+                                        <Typography mt={1}>
+                                            {item.deskripsi}
+                                        </Typography>
+                                    </Paper>
+                                ))}
+                        </Box>
+                    </Paper>
+                )}
             </Box>
-          </CardContent>
-        </Card>
-
-        {response && (
-          <Paper
-            elevation={2}
-            sx={{
-              flex: 1,
-              p: 3,
-              borderRadius: 2,
-              backgroundColor: "#1e1e2f",
-              color: "#fff",
-              border: "1px solid #333",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              🔍 Hasil Analisis
-            </Typography>
-            <Alert severity="success" sx={{ backgroundColor: "#334d2d", color: "#c5e1a5" }}>
-              ✨ Rekomendasi dan insight dari CV akan ditampilkan di sini.
-            </Alert>
-            <Typography mt={2}>
-              <div dangerouslySetInnerHTML={{ __html: response }} />
-            </Typography>
-          </Paper>
-        )}
-      </Box>
-    </BaseLayout>
-  );
+        </BaseLayout>
+    );
 }
