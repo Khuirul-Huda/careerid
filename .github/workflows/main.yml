@@ -20,6 +20,10 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Install PHP dependencies
+        run: |
+          composer install --no-dev --optimize-autoloader
+
       - name: Install Node.js dependencies
         run: |
           npm install
@@ -33,6 +37,7 @@ jobs:
           rsync -avz -e "ssh -i ~/.ssh/id_ed25519" \
             --exclude='.git' \
             --exclude='node_modules' \
+            --exclude='vendor' \
             --exclude='.env' \
             ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/deploy/careerid
 
@@ -52,13 +57,13 @@ jobs:
               echo ".env already exists"
             fi
 
-            # Install PHP dependencies
+            # Install PHP dependencies (remote)
             composer install --no-dev --optimize-autoloader
 
-            # Set Laravel folder permissions
+            # Fix permissions
             chmod -R ug+rwx storage bootstrap/cache
 
-            # Run migrations in production mode
+            # Run Laravel migrations
             php artisan migrate --force
 
             echo "Deployment complete."
