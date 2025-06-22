@@ -20,9 +20,21 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Copy project to server
+      - name: Install Node.js dependencies
         run: |
-          scp -r -i ~/.ssh/id_ed25519 . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/deploy/careerid
+          npm install
+
+      - name: Build assets
+        run: |
+          npm run build
+
+      - name: Copy project to server (excluding unnecessary files)
+        run: |
+          rsync -avz -e "ssh -i ~/.ssh/id_ed25519" \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='.env' \
+            ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/deploy/careerid
 
       - name: Run remote deployment commands
         run: |
@@ -40,5 +52,14 @@ jobs:
               echo ".env already exists"
             fi
 
-            echo "Done"
+            # Install PHP dependencies
+            composer install --no-dev --optimize-autoloader
+
+            # Set Laravel folder permissions
+            chmod -R ug+rwx storage bootstrap/cache
+
+            # Run migrations in production mode
+            php artisan migrate --force
+
+            echo "Deployment complete."
           EOF
